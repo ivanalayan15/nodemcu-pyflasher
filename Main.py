@@ -87,7 +87,7 @@ class FlashingThread(threading.Thread):
                             # https://github.com/espressif/esptool/issues/599
                             "--flash_size", "detect",
                             "--flash_mode", self._config.mode,
-                            "0x00000", self._config.firmware_path])
+                            self._config.offset_address_val, self._config.firmware_path])
 
             if self._config.erase_before_flash:
                 command.append("--erase-all")
@@ -117,6 +117,7 @@ class FlashConfig:
         self.mode = "dio"
         self.firmware_path = None
         self.port = None
+        self.offset_address_val = "0x000000"
 
     @classmethod
     def load(cls, file_path):
@@ -200,12 +201,15 @@ class NodeMcuFlasher(wx.Frame):
 
         def on_pick_file(event):
             self._config.firmware_path = event.GetPath().replace("'", "")
+			
+        def on_offset_address_changed(event):
+            self._config.offset_address_val = offset_address.GetValue()
 
         panel = wx.Panel(self)
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        fgs = wx.FlexGridSizer(7, 2, 10, 10)
+        fgs = wx.FlexGridSizer(8, 2, 10, 10)
 
         self.choice = wx.Choice(panel, choices=self._get_serial_ports())
         self.choice.Bind(wx.EVT_CHOICE, on_select_port)
@@ -217,6 +221,9 @@ class NodeMcuFlasher(wx.Frame):
 
         file_picker = wx.FilePickerCtrl(panel, style=wx.FLP_USE_TEXTCTRL)
         file_picker.Bind(wx.EVT_FILEPICKER_CHANGED, on_pick_file)
+		
+        offset_address = wx.TextCtrl(panel, value="0x000000")
+        offset_address.Bind(wx.EVT_TEXT, on_offset_address_changed)
 
         serial_boxsizer = wx.BoxSizer(wx.HORIZONTAL)
         serial_boxsizer.Add(self.choice, 1, wx.EXPAND)
@@ -279,6 +286,7 @@ class NodeMcuFlasher(wx.Frame):
 
         port_label = wx.StaticText(panel, label="Serial port")
         file_label = wx.StaticText(panel, label="NodeMCU firmware")
+        offset_address_label = wx.StaticText(panel, label="Offset Address")
         baud_label = wx.StaticText(panel, label="Baud rate")
         flashmode_label = wx.StaticText(panel, label="Flash mode")
 
@@ -307,12 +315,13 @@ class NodeMcuFlasher(wx.Frame):
         fgs.AddMany([
                     port_label, (serial_boxsizer, 1, wx.EXPAND),
                     file_label, (file_picker, 1, wx.EXPAND),
+					offset_address_label, (offset_address, 1, wx.EXPAND),
                     baud_label, baud_boxsizer,
                     flashmode_label_boxsizer, flashmode_boxsizer,
                     erase_label, erase_boxsizer,
                     (wx.StaticText(panel, label="")), (button, 1, wx.EXPAND),
                     (console_label, 1, wx.EXPAND), (self.console_ctrl, 1, wx.EXPAND)])
-        fgs.AddGrowableRow(6, 1)
+        fgs.AddGrowableRow(7, 1)
         fgs.AddGrowableCol(1, 1)
         hbox.Add(fgs, proportion=2, flag=wx.ALL | wx.EXPAND, border=15)
         panel.SetSizer(hbox)
