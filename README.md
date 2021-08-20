@@ -1,4 +1,8 @@
-# NodeMCU PyFlasher
+# NodeMCU PyFlasher (Modified for Offset Address Input)
+
+* This is a forked of https://github.com/marcelstoer/nodemcu-pyflasher which i added some functionality to input offset address during flashing, this is usable specially when you will do an SPIFS image bin flashing that no need to have arduino IDE.
+
+
 [![License](https://marcelstoer.github.io/nodemcu-pyflasher/images/mit-license-badge.svg)](https://github.com/marcelstoer/nodemcu-pyflasher/blob/master/LICENSE)
 [![Github Releases](https://img.shields.io/github/downloads/marcelstoer/nodemcu-pyflasher/total.svg?style=flat)](https://github.com/marcelstoer/nodemcu-pyflasher/releases)
 [![PayPal Donation](https://marcelstoer.github.io/nodemcu-pyflasher/images/donate-paypal-badge.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HFN4ZMET5XS2Q)
